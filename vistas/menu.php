@@ -148,15 +148,11 @@ if (!isset($_SESSION["nombre"])) {
                         <label>Descripción(*):</label>
                         <textarea class="form-control" name="descripcion" id="descripcion" rows="4" maxlength="500" placeholder="Ingrese la descripción del menú" required></textarea>
                       </div>
-                      <div class="form-group col-lg-4 col-md-4 col-sm-6">
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6">
                         <label>Precio(*):</label>
                         <input type="number" class="form-control" name="precio" id="precio" step="0.01" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="8" onkeydown="evitarNegativo(event)" onpaste="return false;" onDrop="return false;" min="0.01" placeholder="Ingrese el precio" required>
                       </div>
-                      <div class="form-group col-lg-4 col-md-4 col-sm-6">
-                        <label>Fecha Disponible(*):</label>
-                        <input type="date" class="form-control" name="fecha_disponible" id="fecha_disponible" required>
-                      </div>
-                      <div class="form-group col-lg-4 col-md-4 col-sm-6">
+                      <div class="form-group col-lg-6 col-md-6 col-sm-6">
                         <label>Tipo de Menú(*):</label>
                         <select class="form-control selectpicker" name="tipo_menu" id="tipo_menu" required>
                           <option value="">- Seleccione -</option>

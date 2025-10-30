@@ -33,7 +33,6 @@ function limpiar() {
     $("#titulo").val("");
     $("#descripcion").val("");
     $("#precio").val("");
-    $("#fecha_disponible").val("");
     $("#tipo_menu").val("almuerzo");
     $("#tipo_menu").selectpicker('refresh');
     $("#imagen").val("");
@@ -172,7 +171,6 @@ function mostrar(idmenu) {
         $("#titulo").val(data.titulo);
         $("#descripcion").val(data.descripcion);
         $("#precio").val(data.precio);
-        $("#fecha_disponible").val(data.fecha_disponible);
         $("#tipo_menu").val(data.tipo_menu);
         $("#tipo_menu").selectpicker('refresh');
         $("#imagenactual").val(data.imagen);

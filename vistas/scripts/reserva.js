@@ -169,7 +169,7 @@ function getDetalles() {
     return detallesArr;
 }
 
-function agregarDetalle(idmenu, titulo, descripcion, fecha_disponible, precio, imagen) {
+function agregarDetalle(idmenu, titulo, descripcion, precio, imagen) {
     if (detalles >= 1) {
         bootbox.alert("Solo puede seleccionar 1 menú por reserva");
         return;
@@ -181,7 +181,6 @@ function agregarDetalle(idmenu, titulo, descripcion, fecha_disponible, precio, i
             '<td><a href="../files/menus/' + imagen + '" class="galleria-lightbox" style="z-index: 10000 !important;"><img src="../files/menus/' + imagen + '" height="50px" width="50px" class="img-fluid"></a></td>' +
             '<td><input type="hidden" name="idmenu[]" value="' + idmenu + '">' + titulo + '</td>' +
             '<td>' + descripcion + '</td>' +
-            '<td>' + fecha_disponible + '</td>' +
             '<td>S/. ' + precio + '</td>' +
             '</tr>';
         cont++;

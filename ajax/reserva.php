@@ -37,18 +37,22 @@ switch ($_GET["op"]) {
                 }
 
                 $idmenu = limpiarCadena($_POST["idmenu"][0]);
-
                 $menu_info = $reserva->obtenerMenuInfo($idmenu);
+
                 if (!$menu_info) {
                     echo "ERROR: El menú seleccionado no existe";
                     break;
                 }
 
-                $fecha_reserva = $menu_info['fecha_disponible'];
-                $precio = $menu_info['precio'];
+                if ($menu_info['estado'] != 'activado') {
+                    echo "ERROR: El menú seleccionado no está disponible";
+                    break;
+                }
 
+                $precio = $menu_info['precio'];
                 $config = $reserva->obtenerConfiguracionAforo();
                 $dias_anticipacion = $config['dias_anticipacion'];
+                $fecha_reserva = date('Y-m-d');
                 $fecha_minima = date('Y-m-d', strtotime('+' . $dias_anticipacion . ' days'));
 
                 if ($fecha_reserva < $fecha_minima) {
@@ -70,7 +74,6 @@ switch ($_GET["op"]) {
 
                 $fecha_registro = date('Y-m-d H:i:s');
                 $codigo_reserva = $reserva->generarCodigoReserva();
-
                 $rspta = $reserva->insertar($idestudiante, $idmenu, $codigo_reserva, $fecha_reserva, $fecha_registro, $precio);
 
                 if ($rspta) {
@@ -282,11 +285,7 @@ switch ($_GET["op"]) {
             header("Location: ../vistas/login.html");
         } else {
             if ($_SESSION['gestion_reservas'] == 1) {
-                $config = $reserva->obtenerConfiguracionAforo();
-                $dias_anticipacion = $config['dias_anticipacion'];
-                $fecha_minima = date('Y-m-d', strtotime('+' . $dias_anticipacion . ' days'));
-
-                $rspta = $reserva->listarMenusDisponibles($fecha_minima);
+                $rspta = $reserva->listarMenusDisponibles();
                 $data = array();
                 while ($reg = $rspta->fetch_object()) {
                     $tipo_menu_detalle = '';
@@ -301,14 +300,20 @@ switch ($_GET["op"]) {
                             break;
                     }
 
+                    $boton_agregar = '';
+                    if ($reg->estado == 'activado') {
+                        $boton_agregar = '<div style="display: flex; justify-content: center;"><button class="btn btn-warning" style="height: 35px;" data-idmenu="' . $reg->idmenu . '" onclick="agregarDetalle(' . $reg->idmenu . ',\'' . addslashes($reg->titulo) . '\',\'' . addslashes(substr($reg->descripcion, 0, 50)) . '\',\'' . number_format($reg->precio, 2) . '\',\'' . $reg->imagen . '\');"><span class="fa fa-plus"></span></button></div>';
+                    } else {
+                        $boton_agregar = '';
+                    }
+
                     $data[] = array(
-                        "0" => '<div style="display: flex; justify-content: center;"><button class="btn btn-warning" style="height: 35px;" data-idmenu="' . $reg->idmenu . '" onclick="agregarDetalle(' . $reg->idmenu . ',\'' . addslashes($reg->titulo) . '\',\'' . addslashes(substr($reg->descripcion, 0, 50)) . '\',\'' . date('d-m-Y', strtotime($reg->fecha_disponible)) . '\',\'' . number_format($reg->precio, 2) . '\',\'' . $reg->imagen . '\');"><span class="fa fa-plus"></span></button></div>',
+                        "0" => $boton_agregar,
                         "1" => ($reg->imagen != "" && $reg->imagen != null) ? '<a href="../files/menus/' . $reg->imagen . '" class="galleria-lightbox" style="z-index: 10000 !important;"><img src="../files/menus/' . $reg->imagen . '" height="50px" width="50px" class="img-fluid"></a>' : '<img src="../files/menus/default.jpg" height="50px" width="50px" class="img-fluid">',
                         "2" => $reg->titulo,
                         "3" => substr($reg->descripcion, 0, 100) . '...',
                         "4" => 'S/. ' . number_format($reg->precio, 2),
-                        "5" => date('d-m-Y', strtotime($reg->fecha_disponible)),
-                        "6" => $tipo_menu_detalle
+                        "5" => $tipo_menu_detalle
                     );
                 }
                 $results = array(

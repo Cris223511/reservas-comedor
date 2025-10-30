@@ -11,13 +11,11 @@ if (empty($_SESSION['idusuario']) && empty($_SESSION['cargo'])) {
 }
 require_once "../modelos/Menu.php";
 $menu = new Menu();
-
 $idmenu = isset($_POST["idmenu"]) ? limpiarCadena($_POST["idmenu"]) : "";
 $titulo = isset($_POST["titulo"]) ? limpiarCadena($_POST["titulo"]) : "";
 $descripcion = isset($_POST["descripcion"]) ? limpiarCadena($_POST["descripcion"]) : "";
 $precio = isset($_POST["precio"]) ? limpiarCadena($_POST["precio"]) : "";
 $imagen = isset($_POST["imagen"]) ? limpiarCadena($_POST["imagen"]) : "";
-$fecha_disponible = isset($_POST["fecha_disponible"]) ? limpiarCadena($_POST["fecha_disponible"]) : "";
 $tipo_menu = isset($_POST["tipo_menu"]) ? limpiarCadena($_POST["tipo_menu"]) : "";
 
 switch ($_GET["op"]) {
@@ -42,23 +40,23 @@ switch ($_GET["op"]) {
                 } else {
                     $imagen = $_POST["imagenactual"];
                 }
-
                 if (empty($idmenu)) {
-                    $tituloExiste = $menu->verificarTituloFechaExiste($titulo, $fecha_disponible);
+                    $tituloExiste = $menu->verificarTituloExiste($titulo);
                     if ($tituloExiste) {
-                        echo "El título del menú que ha ingresado ya existe para esa fecha.";
+                        echo "El título del menú que ha ingresado ya existe.";
                     } else {
                         $idusuario = $_SESSION['idusuario'];
                         $fecha_registro = date('Y-m-d H:i:s');
-                        $rspta = $menu->insertar($idusuario, $titulo, $descripcion, $precio, $imagen, $fecha_disponible, $tipo_menu, $fecha_registro);
+                        $rspta = $menu->insertar($idusuario, $titulo, $descripcion, $precio, $imagen, $tipo_menu, $fecha_registro);
                         echo $rspta ? "Menú registrado correctamente" : "No se pudo registrar el menú";
                     }
                 } else {
-                    $tituloExiste = $menu->verificarTituloFechaEditarExiste($titulo, $fecha_disponible, $idmenu);
-                    if ($tituloExiste) {
-                        echo "El título del menú que ha ingresado ya existe para esa fecha.";
+                    $menuExistente = $menu->mostrar($idmenu);
+                    $tituloExiste = $menu->verificarTituloExiste($titulo);
+                    if ($tituloExiste && $titulo != $menuExistente['titulo']) {
+                        echo "El título del menú que ha ingresado ya existe.";
                     } else {
-                        $rspta = $menu->editar($idmenu, $titulo, $descripcion, $precio, $imagen, $fecha_disponible, $tipo_menu);
+                        $rspta = $menu->editar($idmenu, $titulo, $descripcion, $precio, $imagen, $tipo_menu);
                         echo $rspta ? "Menú actualizado correctamente" : "No se pudo actualizar el menú";
                     }
                 }
@@ -129,7 +127,6 @@ switch ($_GET["op"]) {
                 $fecha_fin = isset($_POST["fecha_fin"]) ? limpiarCadena($_POST["fecha_fin"]) : "";
                 $tipoMenuBuscar = isset($_POST["tipoMenuBuscar"]) ? limpiarCadena($_POST["tipoMenuBuscar"]) : "";
                 $estadoBuscar = isset($_POST["estadoBuscar"]) ? limpiarCadena($_POST["estadoBuscar"]) : "";
-
                 $rspta = $menu->listar($fecha_inicio, $fecha_fin, $tipoMenuBuscar, $estadoBuscar);
                 $data = array();
                 while ($reg = $rspta->fetch_object()) {
@@ -147,7 +144,6 @@ switch ($_GET["op"]) {
                         default:
                             break;
                     }
-
                     $tipo_menu_detalle = "";
                     switch ($reg->tipo_menu) {
                         case 'almuerzo':
@@ -159,7 +155,6 @@ switch ($_GET["op"]) {
                         default:
                             break;
                     }
-
                     $data[] = array(
                         "0" => '<div style="display: flex; flex-wrap: nowrap; gap: 3px">' .
                             (($reg->estado == 'activado') ?
@@ -174,8 +169,8 @@ switch ($_GET["op"]) {
                         "2" => $reg->titulo,
                         "3" => $reg->descripcion,
                         "4" => 'S/. ' . number_format($reg->precio, 2),
-                        "5" => date('d-m-Y', strtotime($reg->fecha_disponible)),
-                        "6" => $tipo_menu_detalle,
+                        "5" => $tipo_menu_detalle,
+                        "6" => date('d-m-Y H:i', strtotime($reg->fecha_registro)),
                         "7" => $reg->nombre_usuario,
                         "8" => $cargo_detalle,
                         "9" => ($reg->estado == 'activado') ? '<span class="label bg-green">Activado</span>' : '<span class="label bg-red">Desactivado</span>'
@@ -190,6 +185,34 @@ switch ($_GET["op"]) {
                 echo json_encode($results);
             } else {
                 require 'noacceso.php';
+            }
+        }
+        break;
+
+    case 'listarMenusDisponibles':
+        if (!isset($_SESSION["nombre"])) {
+            header("Location: ../vistas/login.html");
+        } else {
+            if ($_SESSION['registro_reservas'] == 1) {
+                $rspta = $menu->listarMenusDisponibles();
+                echo '<option value="">- Seleccione -</option>';
+                while ($reg = $rspta->fetch_object()) {
+                    echo '<option value="' . $reg->idmenu . '">(' . $reg->titulo . ') - S/ ' . number_format($reg->precio, 2) . '</option>';
+                }
+            } else {
+                require 'noacceso.php';
+            }
+        }
+        break;
+
+    case 'selectMenus':
+        if (!isset($_SESSION["nombre"])) {
+            header("Location: ../vistas/login.html");
+        } else {
+            $rspta = $menu->selectMenus();
+            echo '<option value="">- Seleccione -</option>';
+            while ($reg = $rspta->fetch_object()) {
+                echo '<option value="' . $reg->idmenu . '">' . $reg->titulo . ' - S/ ' . number_format($reg->precio, 2) . '</option>';
             }
         }
         break;

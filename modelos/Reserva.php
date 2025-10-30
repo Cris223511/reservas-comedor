@@ -83,9 +83,9 @@ class Reserva
         return ejecutarConsulta($sql);
     }
 
-    public function listarMenusDisponibles($fecha_minima)
+    public function listarMenusDisponibles()
     {
-        $sql = "SELECT idmenu,titulo,descripcion,precio,imagen,fecha_disponible,tipo_menu FROM menu WHERE estado='activado' AND fecha_disponible >= '$fecha_minima' ORDER BY fecha_disponible ASC";
+        $sql = "SELECT idmenu,titulo,descripcion,precio,imagen,tipo_menu,estado FROM menu ORDER BY titulo ASC";
         return ejecutarConsulta($sql);
     }
 
@@ -97,7 +97,7 @@ class Reserva
 
     public function obtenerMenuInfo($idmenu)
     {
-        $sql = "SELECT fecha_disponible,precio FROM menu WHERE idmenu='$idmenu'";
+        $sql = "SELECT precio,estado FROM menu WHERE idmenu='$idmenu'";
         return ejecutarConsultaSimpleFila($sql);
     }
 

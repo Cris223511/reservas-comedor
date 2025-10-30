@@ -19,20 +19,18 @@ if (!isset($_SESSION["nombre"])) {
         $pdf->Cell(50, 6, utf8_decode('Título'), 1, 0, 'C', 1);
         $pdf->Cell(35, 6, utf8_decode('Descripción'), 1, 0, 'C', 1);
         $pdf->Cell(20, 6, 'Precio', 1, 0, 'C', 1);
-        $pdf->Cell(30, 6, 'Fecha Disponible', 1, 0, 'C', 1);
         $pdf->Cell(25, 6, 'Tipo', 1, 0, 'C', 1);
+        $pdf->Cell(30, 6, 'Fecha Registro', 1, 0, 'C', 1);
         $pdf->Cell(29, 6, 'Estado', 1, 0, 'C', 1);
         $pdf->Ln(10);
         require_once "../modelos/Menu.php";
         $menu = new Menu();
         $rspta = $menu->listar();
-        $pdf->SetWidths(array(50, 35, 20, 30, 25, 29));
+        $pdf->SetWidths(array(50, 35, 20, 25, 30, 29));
         while ($reg = $rspta->fetch_object()) {
             $titulo = $reg->titulo;
             $descripcion = substr($reg->descripcion, 0, 50);
             $precio = 'S/. ' . number_format($reg->precio, 2);
-            $fecha_disponible = date('d-m-Y', strtotime($reg->fecha_disponible));
-
             $tipo_menu = '';
             switch ($reg->tipo_menu) {
                 case 'almuerzo':
@@ -44,7 +42,7 @@ if (!isset($_SESSION["nombre"])) {
                 default:
                     break;
             }
-
+            $fecha_registro = date('d-m-Y H:i', strtotime($reg->fecha_registro));
             $estado = '';
             switch ($reg->estado) {
                 case 'activado':
@@ -56,9 +54,8 @@ if (!isset($_SESSION["nombre"])) {
                 default:
                     break;
             }
-
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Row(array(utf8_decode($titulo), utf8_decode($descripcion), $precio, $fecha_disponible, utf8_decode($tipo_menu), utf8_decode($estado)));
+            $pdf->Row(array(utf8_decode($titulo), utf8_decode($descripcion), $precio, utf8_decode($tipo_menu), $fecha_registro, utf8_decode($estado)));
         }
         $pdf->Output();
 ?>

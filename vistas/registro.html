@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="../public/img/icon-img.png">
+  <link rel="shortcut icon" href="../public/img/icon-img.ico">
+  <title>Registro - Sistema de Reservas</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <link href="../public/argon/css/argon/nucleo-icons.css" rel="stylesheet" />
+  <link href="../public/argon/css/argon/nucleo-svg.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../public/argon/css/argon/argon-dashboard13.css?v=2.0.4" />
+  <style>
+    .scroll-form {
+      max-height: 66vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 10px;
+    }
+
+    .scroll-form::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scroll-form::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .scroll-form::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+
+    .scroll-form::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    .required {
+      color: rgb(219, 0, 0);
+    }
+  </style>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+  <main class="main-content mt-0">
+    <section>
+      <div class="page-header min-vh-100">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-5 col-lg-6 col-md-8 d-flex flex-column mx-lg-0 mx-auto bg-white border-radius-lg pb-3">
+              <div class="card card-plain">
+                <div class="card-header pb-0 text-start">
+                  <h4 class="font-weight-bolder">Crear cuenta de estudiante</h4>
+                  <p class="mb-2">Completa tus datos para registrarte en el sistema.</p>
+                </div>
+                <div class="card-body">
+                  <form method="POST" id="frmRegistro" enctype="multipart/form-data">
+                    <div class="scroll-form pb-0">
+                      <input type="hidden" name="cargo" value="estudiante">
+
+                      <div class="mb-3">
+                        <label class="form-label">Nombre completo: <span class="required">(*)</span></label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Nombre completo"
+                          name="nombre" id="nombre" maxlength="100" required>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">Tipo de documento: <span class="required">(*)</span></label>
+                          <select class="form-control form-control-lg" name="tipo_documento" id="tipo_documento"
+                            onchange="changeValue(this);" required>
+                            <option value="">- Seleccione -</option>
+                            <option value="DNI">DNI</option>
+                            <option value="RUC">RUC</option>
+                            <option value="CEDULA">CEDULA</option>
+                          </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">Número de documento: <span class="required">(*)</span></label>
+                          <input type="number" class="form-control form-control-lg" placeholder="Número"
+                            name="num_documento" id="num_documento" maxlength="8"
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                            required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Código de estudiante: <span class="required">(*)</span></label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Código de estudiante"
+                          name="codigo_estudiante" id="codigo_estudiante" oninput="convertirMayus(this);" maxlength="20"
+                          required>
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">Teléfono: <span class="required">(*)</span></label>
+                          <input type="number" class="form-control form-control-lg" placeholder="Teléfono"
+                            name="telefono" id="telefono" maxlength="9"
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                            required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">Email: <span class="required">(*)</span></label>
+                          <input type="email" class="form-control form-control-lg" placeholder="Email" name="email"
+                            id="email" maxlength="50" required>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Dirección:</label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Dirección" name="direccion"
+                          id="direccion" maxlength="70">
+                      </div>
+
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">Facultad:</label>
+                          <input type="text" class="form-control form-control-lg" placeholder="Facultad" name="facultad"
+                            id="facultad" maxlength="100">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">Carrera:</label>
+                          <input type="text" class="form-control form-control-lg" placeholder="Carrera profesional"
+                            name="carrera" id="carrera" maxlength="100">
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Usuario: <span class="required">(*)</span></label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Usuario" name="login"
+                          id="login" maxlength="20" oninput="javascript: this.value = this.value.replace(/\s/g, '');"
+                          required>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Contraseña: <span class="required">(*)</span></label>
+                        <input type="password" class="form-control form-control-lg" placeholder="Contraseña"
+                          name="clave" id="clave" maxlength="64" required>
+                      </div>
+
+                      <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="mostrarClave"
+                          onclick="mostrarOcultarClave()">
+                        <label class="form-check-label" for="mostrarClave">Mostrar contraseña</label>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2" id="btnGuardar">
+                        Registrarse
+                      </button>
+                      <p class="text-sm mt-3 mb-0">¿Ya tienes una cuenta?
+                        <a href="login.html" class="text-primary text-gradient font-weight-bold">Inicia sesión aquí</a>
+                      </p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
+              <div
+                class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden fondo-login"
+                style="background-size: cover; background-position: center center;">
+                <span class="mask bg-gradient-primary opacity-6"></span>
+                <h2 class="mt-5 text-white font-weight-bolder position-relative">Sistema de Reservas</h2>
+                <p class="text-white position-relative" style="font-style: italic;">
+                  "Únete a nuestra comunidad estudiantil y disfruta de un servicio eficiente de alimentación."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://kit.fontawesome.com/dbdfd189a0.js" crossorigin="anonymous"></script>
+  <script src="../public/argon/js/argon/core/popper.min.js"></script>
+  <script src="../public/argon/js/argon/core/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="../public/argon/js/argon/argon-dashboard3.min.js?v=2.0.4"></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI="
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="scripts/registro.js"></script>
+</body>
+
+</html>

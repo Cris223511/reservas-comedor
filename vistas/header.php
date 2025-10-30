@@ -254,7 +254,7 @@ $cargo_login = $_SESSION['cargo_detalle'];
                 <li class="user-header" style="background: #002a8e !important;">
                   <img src="../files/usuarios/<?php echo $_SESSION['imagen']; ?>" class="img-circle" alt="User Image">
                   <p style="color: white !important;">
-                    Sistema de Ventas S.A.C.
+                    Sistema de Reservas S.A.C.
                     <small>nuestro contacto: +51 992 719 552</small>
                   </p>
                 </li>

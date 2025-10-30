@@ -126,7 +126,6 @@ if (!isset($_SESSION["nombre"])) {
                                                     <th>Imagen</th>
                                                     <th>Menú</th>
                                                     <th>Descripción</th>
-                                                    <th>Fecha Disponible</th>
                                                     <th>Precio</th>
                                                 </thead>
                                                 <tbody>
@@ -162,7 +161,6 @@ if (!isset($_SESSION["nombre"])) {
                                 <th style="width: 20%; min-width: 180px;">Título</th>
                                 <th>Descripción</th>
                                 <th>Precio</th>
-                                <th>Fecha Disponible</th>
                                 <th>Tipo Menú</th>
                             </thead>
                             <tbody>
@@ -173,7 +171,6 @@ if (!isset($_SESSION["nombre"])) {
                                 <th>Título</th>
                                 <th>Descripción</th>
                                 <th>Precio</th>
-                                <th>Fecha Disponible</th>
                                 <th>Tipo Menú</th>
                             </tfoot>
                         </table>

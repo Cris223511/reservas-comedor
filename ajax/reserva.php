@@ -37,8 +37,15 @@ switch ($_GET["op"]) {
                 }
 
                 $idmenu = limpiarCadena($_POST["idmenu"][0]);
-                $menu_info = $reserva->obtenerMenuInfo($idmenu);
+                $fecha_reserva = isset($_POST["fecha_reserva"]) ? limpiarCadena($_POST["fecha_reserva"]) : "";
+                $hora_reserva = isset($_POST["hora_reserva"]) ? limpiarCadena($_POST["hora_reserva"]) : "";
 
+                if (empty($fecha_reserva) || empty($hora_reserva)) {
+                    echo "ERROR: Debe especificar fecha y hora de reserva";
+                    break;
+                }
+
+                $menu_info = $reserva->obtenerMenuInfo($idmenu);
                 if (!$menu_info) {
                     echo "ERROR: El menú seleccionado no existe";
                     break;
@@ -52,37 +59,49 @@ switch ($_GET["op"]) {
                 $precio = $menu_info['precio'];
                 $config = $reserva->obtenerConfiguracionAforo();
                 $dias_anticipacion = $config['dias_anticipacion'];
-                $fecha_reserva = date('Y-m-d');
-                $fecha_minima = date('Y-m-d', strtotime('+' . $dias_anticipacion . ' days'));
+                $hora_inicio_almuerzo = $config['hora_inicio_almuerzo'];
+                $hora_fin_almuerzo = $config['hora_fin_almuerzo'];
 
+                $fecha_minima = date('Y-m-d', strtotime('+' . $dias_anticipacion . ' days'));
                 if ($fecha_reserva < $fecha_minima) {
                     echo "ERROR: Debe reservar con al menos $dias_anticipacion día(s) de anticipación";
                     break;
                 }
 
-                $tiene_reserva = $reserva->verificarReservaActivaEstudiante($idestudiante, $fecha_reserva);
-                if ($tiene_reserva) {
-                    echo "Ya tiene una reserva activa para esta fecha";
+                if ($hora_reserva < $hora_inicio_almuerzo || $hora_reserva > $hora_fin_almuerzo) {
+                    echo "ERROR: La hora de reserva debe estar entre $hora_inicio_almuerzo y $hora_fin_almuerzo";
                     break;
                 }
 
-                $aforo_disponible = $reserva->verificarAforoDisponible($fecha_reserva);
-                if (!$aforo_disponible) {
-                    echo "No hay cupos disponibles para esta fecha";
-                    break;
-                }
+                if (empty($idreserva)) {
+                    $tiene_reserva = $reserva->verificarReservaActivaEstudiante($idestudiante, $fecha_reserva);
+                    if ($tiene_reserva) {
+                        echo "Ya tiene una reserva activa para esta fecha";
+                        break;
+                    }
 
-                $fecha_registro = date('Y-m-d H:i:s');
-                $codigo_reserva = $reserva->generarCodigoReserva();
-                $rspta = $reserva->insertar($idestudiante, $idmenu, $codigo_reserva, $fecha_reserva, $fecha_registro, $precio);
+                    $aforo_disponible = $reserva->verificarAforoDisponible($fecha_reserva);
+                    if (!$aforo_disponible) {
+                        echo "No hay cupos disponibles para esta fecha";
+                        break;
+                    }
 
-                if ($rspta) {
-                    $reserva->actualizarControlAforo($fecha_reserva);
-                    $whatsapp = $config['whatsapp_contacto'];
-                    $mensaje_whatsapp = $config['mensaje_whatsapp'];
-                    echo "Reserva creada correctamente. Código: $codigo_reserva\n\nPara confirmar su reserva, envíe su comprobante de pago al WhatsApp: $whatsapp\n\n$mensaje_whatsapp";
+                    $fecha_registro = date('Y-m-d H:i:s');
+                    $codigo_reserva = $reserva->generarCodigoReserva();
+
+                    $rspta = $reserva->insertar($idestudiante, $idmenu, $codigo_reserva, $fecha_reserva, $hora_reserva, $fecha_registro, $precio);
+
+                    if ($rspta) {
+                        $reserva->actualizarControlAforo($fecha_reserva);
+                        $whatsapp = $config['whatsapp_contacto'];
+                        $mensaje_whatsapp = $config['mensaje_whatsapp'];
+                        echo "Reserva creada correctamente. Código: $codigo_reserva\n\nPara confirmar su reserva, envíe su comprobante de pago al WhatsApp: $whatsapp\n\n$mensaje_whatsapp";
+                    } else {
+                        echo "No se pudo crear la reserva";
+                    }
                 } else {
-                    echo "No se pudo crear la reserva";
+                    $rspta = $reserva->editarReservaEstudiante($idreserva, $idmenu, $fecha_reserva, $hora_reserva, $precio);
+                    echo $rspta ? "Reserva actualizada correctamente" : "No se pudo actualizar la reserva";
                 }
             } else {
                 require 'noacceso.php';
@@ -220,6 +239,7 @@ switch ($_GET["op"]) {
                     } elseif ($cargo == 'estudiante') {
                         $opciones = '<div style="display: flex; flex-wrap: nowrap; gap: 3px">' .
                             '<a target="_blank" href="../reportes/exTicketReserva.php?id=' . $reg->idreserva . '"><button class="btn btn-success" style="height: 35px; margin-right: 3px;"><i class="fa fa-print"></i></button></a>' .
+                            (($reg->estado_reserva == 'pendiente') ? ('<button class="btn btn-warning" style="margin-right: 3px;" onclick="mostrar(' . $reg->idreserva . ');"><i class="fa fa-pencil"></i></button>') : '') .
                             (($reg->estado_reserva == 'pendiente') ? ('<button class="btn btn-danger" style="height: 35px;" onclick="cancelarReserva(' . $reg->idreserva . ')"><i class="fa fa-close"></i></button>') : '') .
                             '</div>';
                     }
@@ -254,13 +274,15 @@ switch ($_GET["op"]) {
                             break;
                     }
 
+                    $fecha_hora_reserva = date('d-m-Y', strtotime($reg->fecha_reserva)) . '<br>' . date('H:i', strtotime($reg->hora_reserva));
+
                     $data[] = array(
                         "0" => $opciones,
                         "1" => $reg->codigo_reserva,
                         "2" => $reg->estudiante,
                         "3" => $reg->codigo_estudiante,
                         "4" => $reg->menu,
-                        "5" => date('d-m-Y', strtotime($reg->fecha_reserva)),
+                        "5" => $fecha_hora_reserva,
                         "6" => 'S/. ' . number_format($reg->precio, 2),
                         "7" => $estado_pago_html,
                         "8" => $estado_reserva_html,

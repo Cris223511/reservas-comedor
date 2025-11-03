@@ -1038,51 +1038,48 @@ class FPDF
 		$this->MultiCell(0, 5, ($tipo_documento != "") ? mb_convert_encoding(mb_strtoupper("$tipo_documento: $num_documento"), 'ISO-8859-1', 'UTF-8') : mb_convert_encoding("TIPO Y N° DOC. SIN REGISTRAR", 'ISO-8859-1', 'UTF-8'), 0, 'L', false);
 	}
 
-	function cuerpoReserva($y, $nombre_comedor, $titulo, $logo, $ext_logo, $fecha_hora_impresion, $codigo_reserva, $fecha_reserva, $fecha_registro, $estudiante, $codigo_estudiante, $estudiante_email, $estudiante_telefono, $facultad, $carrera, $menu, $menu_descripcion, $tipo_menu, $precio, $metodo_pago, $estado_pago, $estado_reserva, $observaciones)
+	function cuerpoReserva($y, $nombre_comedor, $titulo, $logo, $ext_logo, $fecha_hora_impresion, $codigo_reserva, $fecha_hora_reserva, $fecha_registro, $estudiante, $codigo_estudiante, $estudiante_email, $estudiante_telefono, $facultad, $carrera, $menu, $menu_descripcion, $tipo_menu, $precio, $metodo_pago, $estado_pago, $estado_reserva, $observaciones)
 	{
 		$this->Image($logo, 25, $y += 3, 20, 20, $ext_logo);
-
 		$this->SetY($y += 22.5);
 		$this->SetFont('hypermarket', '', 10);
 		$this->SetTextColor(0, 0, 0);
 		$this->MultiCell(0, 3.5, mb_convert_encoding(mb_strtoupper("$nombre_comedor"), 'ISO-8859-1', 'UTF-8'), 0, 'C', false);
-
 		$this->SetY($y += 7.5);
 		$this->SetFont('hypermarket', '', 10);
 		$this->SetTextColor(0, 0, 0);
 		$this->MultiCell(0, 3.5, mb_convert_encoding(mb_strtoupper("$titulo"), 'ISO-8859-1', 'UTF-8'), 0, 'C', false);
-
 		$this->SetXY(0, $y - 35);
 		$this->SetFont('hypermarket', '', 8);
 		$this->SetTextColor(0, 0, 0);
+
 		$estadoTexto = "PAGO: " . mb_strtoupper($estado_pago) . " / " . mb_strtoupper($estado_reserva);
+
 		$this->MultiCell(68, 5, $estadoTexto, 0, 'R', false);
 
-		$this->Ln(4);
+		$this->Ln(38);
 		$this->SetX(1.5);
+		$this->SetFont('hypermarket', '', 10);
 		$this->Cell(0, -2, utf8_decode("-----------------------------------------------"), 0, 0, 'L');
 		$this->Ln(1);
 		$this->SetX(1.5);
 		$this->Cell(0, -2, utf8_decode("-----------------------------------------------"), 0, 0, 'L');
 		$this->Ln(1.5);
 
+		$this->Ln(1.5);
 		$this->SetX(3);
 		$this->SetFont('hypermarket', '', 10);
 		$this->SetTextColor(0, 0, 0);
 		$this->MultiCell(0, 5, mb_convert_encoding("CÓDIGO RESERVA: $codigo_reserva", 'ISO-8859-1', 'UTF-8'), 0, 'L', false);
-
 		$this->SetX(3);
 		$this->SetTextColor(0, 0, 0);
-		$this->MultiCell(0, 5, mb_convert_encoding("FECHA RESERVA: $fecha_reserva", 'ISO-8859-1', 'UTF-8'), 0, 'L', false);
-
+		$this->MultiCell(0, 5, mb_convert_encoding("RESERVA PARA: $fecha_hora_reserva", 'ISO-8859-1', 'UTF-8'), 0, 'L', false);
 		$this->SetX(3);
 		$this->SetTextColor(0, 0, 0);
 		$this->MultiCell(0, 5, mb_convert_encoding("FECHA REGISTRO: $fecha_registro", 'ISO-8859-1', 'UTF-8'), 0, 'L', false);
-
 		$this->SetX(3);
 		$this->SetTextColor(0, 0, 0);
 		$this->MultiCell(0, 5, mb_convert_encoding("FECHA IMPRESIÓN: $fecha_hora_impresion", 'ISO-8859-1', 'UTF-8'), 0, 'L', false);
-
 		$this->Ln(4);
 		$this->SetX(1.5);
 		$this->Cell(0, -2, utf8_decode("-----------------------------------------------"), 0, 0, 'L');
@@ -1200,7 +1197,6 @@ class FPDF
 		$this->SetX(1.5);
 		$this->Cell(0, -2, utf8_decode("-----------------------------------------------"), 0, 0, 'L');
 		$this->Ln(1.5);
-
 		return $y;
 	}
 

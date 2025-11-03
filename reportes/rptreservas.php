@@ -15,14 +15,15 @@ if (!isset($_SESSION["nombre"])) {
         $pdf->Cell(100, 6, utf8_decode('REPORTE DE RESERVAS'), 1, 0, 'C');
         $pdf->Ln(10);
         $pdf->SetFillColor(232, 232, 232);
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(30, 6, utf8_decode('Código Reserva'), 1, 0, 'C', 1);
-        $pdf->Cell(40, 6, 'Estudiante', 1, 0, 'C', 1);
-        $pdf->Cell(25, 6, utf8_decode('Código Est.'), 1, 0, 'C', 1);
-        $pdf->Cell(30, 6, 'Fecha Reserva', 1, 0, 'C', 1);
-        $pdf->Cell(20, 6, 'Precio', 1, 0, 'C', 1);
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(28, 6, utf8_decode('Código Res.'), 1, 0, 'C', 1);
+        $pdf->Cell(35, 6, 'Estudiante', 1, 0, 'C', 1);
+        $pdf->Cell(22, 6, utf8_decode('Cód. Est.'), 1, 0, 'C', 1);
+        $pdf->Cell(25, 6, 'Fecha Reserva', 1, 0, 'C', 1);
+        $pdf->Cell(15, 6, 'Hora', 1, 0, 'C', 1);
+        $pdf->Cell(18, 6, 'Precio', 1, 0, 'C', 1);
         $pdf->Cell(25, 6, 'Estado Pago', 1, 0, 'C', 1);
-        $pdf->Cell(19, 6, 'Estado Res.', 1, 0, 'C', 1);
+        $pdf->Cell(21, 6, 'Estado Res.', 1, 0, 'C', 1);
         $pdf->Ln(10);
         require_once "../modelos/Reserva.php";
         $reserva = new Reserva();
@@ -33,12 +34,13 @@ if (!isset($_SESSION["nombre"])) {
         } else {
             $rspta = $reserva->listar();
         }
-        $pdf->SetWidths(array(30, 40, 25, 30, 20, 25, 19));
+        $pdf->SetWidths(array(28, 35, 22, 25, 15, 18, 25, 21));
         while ($reg = $rspta->fetch_object()) {
             $codigo_reserva = $reg->codigo_reserva;
-            $estudiante = substr($reg->estudiante, 0, 25);
+            $estudiante = substr($reg->estudiante, 0, 20);
             $codigo_estudiante = $reg->codigo_estudiante;
             $fecha_reserva = date('d-m-Y', strtotime($reg->fecha_reserva));
+            $hora_reserva = date('H:i', strtotime($reg->hora_reserva));
             $precio = 'S/. ' . number_format($reg->precio, 2);
             $estado_pago = '';
             switch ($reg->estado_pago) {
@@ -68,8 +70,8 @@ if (!isset($_SESSION["nombre"])) {
                 default:
                     break;
             }
-            $pdf->SetFont('Arial', '', 10);
-            $pdf->Row(array(utf8_decode($codigo_reserva), utf8_decode($estudiante), utf8_decode($codigo_estudiante), $fecha_reserva, $precio, utf8_decode($estado_pago), utf8_decode($estado_reserva)));
+            $pdf->SetFont('Arial', '', 9);
+            $pdf->Row(array(utf8_decode($codigo_reserva), utf8_decode($estudiante), utf8_decode($codigo_estudiante), $fecha_reserva, $hora_reserva, $precio, utf8_decode($estado_pago), utf8_decode($estado_reserva)));
         }
         $pdf->Output();
 ?>

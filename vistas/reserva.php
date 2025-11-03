@@ -89,7 +89,7 @@ if (!isset($_SESSION["nombre"])) {
                                             <th style="width: 20%; min-width: 180px;">Estudiante</th>
                                             <th>Código Estudiante</th>
                                             <th>Menú</th>
-                                            <th>Fecha Reserva</th>
+                                            <th>Fecha y Hora Reserva</th>
                                             <th>Precio</th>
                                             <th>Estado Pago</th>
                                             <th>Estado Reserva</th>
@@ -103,7 +103,7 @@ if (!isset($_SESSION["nombre"])) {
                                             <th>Estudiante</th>
                                             <th>Código Estudiante</th>
                                             <th>Menú</th>
-                                            <th>Fecha Reserva</th>
+                                            <th>Fecha y Hora Reserva</th>
                                             <th>Precio</th>
                                             <th>Estado Pago</th>
                                             <th>Estado Reserva</th>
@@ -118,6 +118,15 @@ if (!isset($_SESSION["nombre"])) {
                                         <input type="hidden" name="idreserva" id="idreserva">
                                         <div class="form-group col-lg-12 col-md-12 col-sm-12">
                                             <button type="button" class="btn btn-info" onclick="abrirModalMenus()"><i class="fa fa-plus"></i> Seleccionar Menú</button>
+                                        </div>
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label>Fecha de Reserva(*):</label>
+                                            <input type="date" class="form-control" name="fecha_reserva" id="fecha_reserva" required>
+                                        </div>
+
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label>Hora de Reserva(*):</label>
+                                            <input type="time" class="form-control" name="hora_reserva" id="hora_reserva" required>
                                         </div>
                                         <div class="form-group col-lg-12 col-md-12 col-sm-12 table-responsive" style="border: 0px solid transparent !important; margin-top: 10px">
                                             <table id="detalles" class="table table-striped table-bordered table-condensed table-hover w-100" style="width: 100% !important">

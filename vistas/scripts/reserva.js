@@ -25,6 +25,8 @@ function init() {
 
 function limpiar() {
     $("#idreserva").val("");
+    $("#fecha_reserva").val("");
+    $("#hora_reserva").val("");
     $("#detalles tbody").html("");
     cont = 0;
     detalles = 0;
@@ -183,6 +185,7 @@ function agregarDetalle(idmenu, titulo, descripcion, precio, imagen) {
             '<td>' + descripcion + '</td>' +
             '<td>S/. ' + precio + '</td>' +
             '</tr>';
+
         cont++;
         detalles = detalles + 1;
         $('#detalles tbody').append(fila);
@@ -234,6 +237,31 @@ function guardaryeditar(e) {
             mostrarform(false);
             tabla.ajax.reload();
         }
+    });
+}
+
+function mostrar(idreserva) {
+    $.post("../ajax/reserva.php?op=mostrar", { idreserva: idreserva }, function (data, status) {
+        data = JSON.parse(data);
+        console.log(data);
+        mostrarform(true);
+
+        $("#idreserva").val(data.idreserva);
+        $("#fecha_reserva").val(data.fecha_reserva);
+        $("#hora_reserva").val(data.hora_reserva);
+
+        var fila = '<tr class="filas" id="fila0">' +
+            '<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle(0, ' + data.idmenu + ')">X</button></td>' +
+            '<td><a href="../files/menus/' + data.imagen_menu + '" class="galleria-lightbox" style="z-index: 10000 !important;"><img src="../files/menus/' + data.imagen_menu + '" height="50px" width="50px" class="img-fluid"></a></td>' +
+            '<td><input type="hidden" name="idmenu[]" value="' + data.idmenu + '">' + data.menu + '</td>' +
+            '<td>' + data.descripcion_menu + '</td>' +
+            '<td>S/. ' + parseFloat(data.precio).toFixed(2) + '</td>' +
+            '</tr>';
+
+        $('#detalles tbody').html(fila);
+        cont = 1;
+        detalles = 1;
+        evaluar();
     });
 }
 

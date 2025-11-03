@@ -170,8 +170,8 @@ switch ($_GET["op"]) {
                         "3" => $reg->descripcion,
                         "4" => 'S/. ' . number_format($reg->precio, 2),
                         "5" => $tipo_menu_detalle,
-                        "6" => date('d-m-Y H:i', strtotime($reg->fecha_registro)),
-                        "7" => $reg->nombre_usuario,
+                        "6" => $reg->nombre_usuario,
+                        "7" => date('d-m-Y H:i', strtotime($reg->fecha_registro)),
                         "8" => $cargo_detalle,
                         "9" => ($reg->estado == 'activado') ? '<span class="label bg-green">Activado</span>' : '<span class="label bg-red">Desactivado</span>'
                     );

@@ -9,17 +9,18 @@ if (!isset($_SESSION["nombre"])) {
     if ($_SESSION['gestion_reservas'] == 1) {
         require('../modelos/Configuracion.php');
         $configuracion = new Configuracion();
-        $rspta = $configuracion->mostrarSistema();
-        $nombre_comedor = $rspta["nombre_comedor"];
-        $universidad = $rspta["universidad"];
-        $direccion = ($rspta["direccion"] == '') ? 'Sin registrar.' : $rspta["direccion"];
-        $telefono = ($rspta["telefono"] == '') ? 'Sin registrar.' : number_format($rspta["telefono"], 0, '', ' ');
-        $email = ($rspta["email"] == '') ? 'Sin registrar.' : $rspta["email"];
+        $rsptaSistema = $configuracion->mostrarSistema();
+        $nombre_comedor = $rsptaSistema["nombre_comedor"];
+        $universidad = $rsptaSistema["universidad"];
+        $direccion = ($rsptaSistema["direccion"] == '') ? 'Sin registrar.' : $rsptaSistema["direccion"];
+        $telefono = ($rsptaSistema["telefono"] == '') ? 'Sin registrar.' : number_format($rsptaSistema["telefono"], 0, '', ' ');
+        $email = ($rsptaSistema["email"] == '') ? 'Sin registrar.' : $rsptaSistema["email"];
+        $logo = $rsptaSistema["logo"];
 
         require('../modelos/Reserva.php');
         $reserva = new Reserva();
-        $rspta = $reserva->obtenerDatosTicket($_GET["id"]);
-        $reg = (object) $rspta;
+        $rsptaReserva = $reserva->obtenerDatosTicket($_GET["id"]);
+        $reg = (object) $rsptaReserva;
 
         require('ticket/code128.php');
 
@@ -56,7 +57,6 @@ if (!isset($_SESSION["nombre"])) {
 
         if ($altoTotal < 180) $altoTotal = 180;
 
-        $logo = $rspta["logo"];
         $ext_logo = strtolower(pathinfo($logo, PATHINFO_EXTENSION));
 
         $pdf = new PDF_Code128('P', 'mm', array(70, $altoTotal));
@@ -103,8 +103,11 @@ if (!isset($_SESSION["nombre"])) {
                 $tipo_menu_mostrar = 'Cena';
                 break;
             default:
+                $tipo_menu_mostrar = '';
                 break;
         }
+
+        $fecha_hora_reserva = date('d-m-Y', strtotime($reg->fecha_reserva)) . ' ' . date('H:i', strtotime($reg->hora_reserva));
 
         $y = $pdf->cuerpoReserva(
             4,
@@ -114,7 +117,7 @@ if (!isset($_SESSION["nombre"])) {
             $ext_logo,
             date('d-m-Y H:i:s'),
             $reg->codigo_reserva ?? '',
-            date('d-m-Y', strtotime($reg->fecha_reserva)) ?? '',
+            $fecha_hora_reserva,
             date('d-m-Y H:i:s', strtotime($reg->fecha_registro)) ?? '',
             $reg->estudiante ?? '',
             $reg->codigo_estudiante ?? '',
